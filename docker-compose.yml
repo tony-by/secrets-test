@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    environment:
+      - DATABASE_URL=postgresql://user:compose_password_2024@db:5432/app
+      - API_KEY=sk_compose_1234567890abcdef1234567890abcdef
+      - JWT_SECRET=compose_jwt_secret_2024
+      - REDIS_PASSWORD=redis_compose_password_2024
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=postgres_compose_password_2024
+      - POSTGRES_DB=production_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass redis_compose_password_2024
+    volumes:
+      - redis_data:/data
+
+  nginx:
+    image: nginx:alpine
+    environment:
+      - NGINX_AUTH_PASSWORD=nginx_auth_password_2024
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+
+volumes:
+  postgres_data:
+  redis_data:
